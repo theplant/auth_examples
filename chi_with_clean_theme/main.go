@@ -9,6 +9,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/qor/auth"
 	"github.com/qor/auth_themes/clean"
+	"github.com/qor/middlewares"
 )
 
 var db, _ = gorm.Open("sqlite3", "test.db")
@@ -24,5 +25,5 @@ func main() {
 	r.Mount("/auth/", Auth.NewServeMux())
 
 	fmt.Println("Listening on: 3000")
-	http.ListenAndServe(":3000", r)
+	http.ListenAndServe(":3000", middlewares.Apply(r))
 }
