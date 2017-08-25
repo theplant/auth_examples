@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi"
@@ -25,8 +26,8 @@ func main() {
 		})
 	)
 
-	Authority.Register("last_actived_in_half_hour", authority.Rule{
-		TimeoutSinceLastActive: time.Minute * 30,
+	Authority.Register("logged_in_half_hour", authority.Rule{
+		TimeoutSinceLastLogin: time.Minute * 30,
 	})
 
 	Authority.Register("distracted_less_than_one_minute_since_last_login", authority.Rule{
@@ -40,32 +41,29 @@ func main() {
 
 	r := chi.NewRouter()
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("welcome"))
-	})
+	r.Get("/", defaultHandler)
 
 	r.With(Authority.Authorize()).
-		Get("/account", func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("account page"))
-		})
+		Get("/account", defaultHandler)
 
-	r.With(Authority.Authorize("last_actived_in_half_hour")).
-		Get("/account/edit_profile", func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("edit profile"))
-		})
+	r.With(Authority.Authorize("logged_in_half_hour")).
+		Get("/account/edit_profile", defaultHandler)
 
 	r.With(Authority.Authorize("distracted_less_than_one_minute_since_last_login")).
-		Get("/account/edit_order", func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("edit order"))
-		})
+		Get("/account/edit_order", defaultHandler)
 
 	r.With(Authority.Authorize("logged_in_ten_minutes_and_distracted_less_than_30_seconds")).
-		Get("/account/edit_creditcard", func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("edit creditcard"))
-		})
+		Get("/account/edit_creditcard", defaultHandler)
 
 	r.Mount("/auth/", Auth.NewServeMux())
 
 	fmt.Println("Listening on: 3000")
 	http.ListenAndServe(":3000", middlewares.Apply(r))
+}
+
+func defaultHandler(w http.ResponseWriter, r *http.Request) {
+	links := []string{"<a href='/'>Home Page</a>", "<a href='/account'>Account Page</a>", "<a href='/account/edit_profile'>Edit Profile</a>", "<a href='/account/edit_order'>Edit Order</a>", "<a href='/account/edit_creditcard'>Edit Credit Card</a>"}
+
+	content := fmt.Sprintf("<html><body>Current path: %v<br><br> Available Routers: <br>%v</body></html>", r.URL.Path, strings.Join(links, "<br>"))
+	w.Write([]byte(content))
 }
