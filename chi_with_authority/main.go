@@ -11,6 +11,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/qor/auth"
 	"github.com/qor/auth/authority"
+	"github.com/qor/auth/claims"
 	"github.com/qor/auth_themes/clean"
 	"github.com/qor/middlewares"
 )
@@ -63,8 +64,11 @@ func main() {
 func defaultHandler(w http.ResponseWriter, req *http.Request) {
 	links := []string{"<a href='/'>Home Page</a>", "<a href='/account'>Account Page</a>", "<a href='/account/edit_profile'>Edit Profile</a>", "<a href='/account/edit_order'>Edit Order</a>", "<a href='/account/edit_creditcard'>Edit Credit Card</a>"}
 
-	claims, _ := Auth.Get(req)
+	Claims, _ := Auth.Get(req)
+	if Claims == nil {
+		Claims = &claims.Claims{}
+	}
 
-	content := fmt.Sprintf("<html><body>Logged at: %v, Longest Distraction: %v<br><br>Current path: %v<br><br> Available Routers: <br>%v</body></html>", claims.LastLoginAt, claims.LongestDistractionSinceLastLogin, req.URL.Path, strings.Join(links, "<br>"))
+	content := fmt.Sprintf("<html><body>Logged at: %v, Longest Distraction: %v<br><br>Current path: %v<br><br> Available Routers: <br>%v<br><a href='/auth/login'>Login</a><br><a href='/auth/logout'>Logout</a></body></html>", Claims.LastLoginAt, Claims.LongestDistractionSinceLastLogin, req.URL.Path, strings.Join(links, "<br>"))
 	w.Write([]byte(content))
 }
