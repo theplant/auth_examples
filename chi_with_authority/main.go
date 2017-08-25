@@ -15,17 +15,16 @@ import (
 	"github.com/qor/middlewares"
 )
 
-var db, _ = gorm.Open("sqlite3", "test.db")
+var (
+	db, _     = gorm.Open("sqlite3", "test.db")
+	Auth      = clean.New(&auth.Config{DB: db})
+	Authority = authority.New(&authority.Config{
+		Auth: Auth,
+		RedirectPathAfterAccessDenied: "/auth/login",
+	})
+)
 
 func main() {
-	var (
-		Auth      = clean.New(&auth.Config{DB: db})
-		Authority = authority.New(&authority.Config{
-			Auth: Auth,
-			RedirectPathAfterAccessDenied: "/auth/login",
-		})
-	)
-
 	Authority.Register("logged_in_half_hour", authority.Rule{
 		TimeoutSinceLastLogin: time.Minute * 30,
 	})
@@ -61,9 +60,11 @@ func main() {
 	http.ListenAndServe(":3000", middlewares.Apply(r))
 }
 
-func defaultHandler(w http.ResponseWriter, r *http.Request) {
+func defaultHandler(w http.ResponseWriter, req *http.Request) {
 	links := []string{"<a href='/'>Home Page</a>", "<a href='/account'>Account Page</a>", "<a href='/account/edit_profile'>Edit Profile</a>", "<a href='/account/edit_order'>Edit Order</a>", "<a href='/account/edit_creditcard'>Edit Credit Card</a>"}
 
-	content := fmt.Sprintf("<html><body>Current path: %v<br><br> Available Routers: <br>%v</body></html>", r.URL.Path, strings.Join(links, "<br>"))
+	claims, _ := Auth.Get(req)
+
+	content := fmt.Sprintf("<html><body>Logged at: %v, Longest Distraction: %v<br><br>Current path: %v<br><br> Available Routers: <br>%v</body></html>", claims.LastLoginAt, claims.LongestDistractionSinceLastLogin, req.URL.Path, strings.Join(links, "<br>"))
 	w.Write([]byte(content))
 }
