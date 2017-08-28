@@ -22,7 +22,7 @@
 
     header,
     footer {
-      width: 960px;
+      width: 500px;
       margin-left: auto;
       margin-right: auto;
     }
@@ -52,13 +52,7 @@
     }
 
     .description {
-      text-align: center;
       font-size: 16px;
-    }
-
-    a {
-      color: #444;
-      text-decoration: none;
     }
 
     .backdrop {
@@ -77,9 +71,24 @@
   <header>
     <h1 class="logo">Welcome to Beego</h1>
     <div class="description">
-      Beego is a simple & powerful Go web framework which is inspired by tornado and sinatra.
+      Logged at: {{.LoggedAt}}, Longest Distraction: {{.LongestDistraction}} <br><br>
+
+      Current path: {{.CurrentPath}} <br><br>
+
+
+      Available Routers: <br><br>
+
+      <a href='/'>Home Page</a><br>
+      <a href='/account'>Account Page</a><br>
+      <a href='/account/edit_profile'>Edit Profile</a><br>
+      <a href='/account/edit_order'>Edit Order</a><br>
+      <a href='/account/edit_creditcard'>Edit Credit Card</a><br>
+
+      <a href='/auth/login'>Login</a><br>
+      <a href='/auth/logout'>Logout</a>
     </div>
   </header>
+
   <footer>
     <div class="author">
       Official website:
