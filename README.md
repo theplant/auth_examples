@@ -16,12 +16,12 @@ List of examples for how to customize Auth and works with different web framewor
 
 ## Authorization
 
-    https://github.com/theplant/auth_examples/tree/master/chi_with_authority
+* [Chi with Authority](https://github.com/theplant/auth_examples/tree/master/chi_with_authority)
 
 ## Auth Themes
 
-    https://github.com/theplant/auth_examples/tree/master/chi_with_clean_theme
+* [Chi with Clean Theme](https://github.com/theplant/auth_examples/tree/master/chi_with_clean_theme)
 
 ## Customizing User Model
 
-    https://github.com/theplant/auth_examples/tree/master/chi_with_user_model
+* [Customize User Model](https://github.com/theplant/auth_examples/tree/master/chi_with_user_model)
