@@ -3,12 +3,16 @@ package main
 import (
 	"net/http"
 
+	scssession "github.com/alexedwards/scs"
+	"github.com/alexedwards/scs/stores/memstore"
 	"github.com/fatih/color"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/qor/admin"
 	"github.com/qor/middlewares"
+	"github.com/qor/session/manager"
+	"github.com/qor/session/scs"
 	appkitlog "github.com/theplant/appkit/log"
 	"github.com/theplant/appkit/server"
 )
@@ -30,6 +34,7 @@ func (user User) DisplayName() string {
 }
 
 func main() {
+	manager.SessionManager = scs.New(scssession.NewManager(memstore.New(0)))
 	DB.DropTable(&Order{})
 	DB.AutoMigrate(&User{}, &Order{})
 
