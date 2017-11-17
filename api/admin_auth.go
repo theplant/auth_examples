@@ -1,20 +1,28 @@
 package main
 
 import (
+	scssession "github.com/alexedwards/scs"
+	"github.com/alexedwards/scs/stores/memstore"
 	"github.com/jinzhu/gorm"
 	"github.com/qor/admin"
 	"github.com/qor/auth"
 	"github.com/qor/auth_themes/clean"
 	"github.com/qor/qor"
+	"github.com/qor/session/manager"
+	"github.com/qor/session/scs"
 )
 
-var (
+var DB *gorm.DB
+var Auth *auth.Auth
+
+func init() {
+	manager.SessionManager = scs.New(scssession.NewManager(memstore.New(0)))
 	DB, _ = gorm.Open("sqlite3", "test.db")
-	Auth  = clean.New(&auth.Config{
+	Auth = clean.New(&auth.Config{
 		DB:        DB,
 		UserModel: User{},
 	})
-)
+}
 
 type APIAuth struct {
 }
