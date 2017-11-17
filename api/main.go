@@ -7,8 +7,6 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"github.com/qor/auth"
-	"github.com/qor/auth_themes/clean"
 	"github.com/qor/qor-example-cases/config"
 	appkitlog "github.com/theplant/appkit/log"
 	"github.com/theplant/appkit/server"
@@ -27,16 +25,9 @@ type User struct {
 }
 
 func main() {
-	var (
-		DB, _ = gorm.Open("sqlite3", "test.db")
-		Admin = config.Admin
-		Auth  = clean.New(&auth.Config{
-			DB:        DB,
-			UserModel: User{},
-		})
-	)
+	var Admin = config.Admin
 
-	Admin.SetAuth(Auth)
+	Admin.SetAuth(&APIAuth{})
 	Admin.AddResource(&Order{})
 
 	mux := http.NewServeMux()
