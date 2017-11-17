@@ -28,6 +28,5 @@ func (APIAuth) LogoutURL(c *admin.Context) string {
 }
 
 func (APIAuth) GetCurrentUser(c *admin.Context) qor.CurrentUser {
-	currentUser, _ := Auth.GetCurrentUser(c.Request).(qor.CurrentUser)
-	return currentUser
+	return Auth.GetCurrentUser(c.Request).(qor.CurrentUser)
 }
